@@ -1,13 +1,48 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
-generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-}
-
 datasource db {
   provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("USER") // "USER" ou "ADMIN"
+  createdAt DateTime @default(now()) @map("created_at")
+
+  reservations Reservation[]
+
+  @@map("users")
+}
+
+model Room {
+  id          String   @id @default(uuid())
+  name        String
+  capacity    Int
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  reservations Reservation[]
+
+  @@map("rooms")
+}
+
+model Reservation {
+  id                   String   @id @default(uuid())
+  userId               String   @map("user_id")
+  roomId               String   @map("room_id")
+  numberOfParticipants Int      @map("number_of_participants")
+  startAt              DateTime @map("start_at") // Armazena Dia + Hora de início de forma segura
+  endAt                DateTime @map("end_at")   // Armazena Dia + Hora de término de forma segura
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("reservations")
 }

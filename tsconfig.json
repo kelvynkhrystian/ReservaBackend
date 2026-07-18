@@ -1,20 +1,19 @@
 {
   "compilerOptions": {
-    /* Layout de Pastas */
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
 
-    /* Configuração de Módulos Moderna (ESM) */
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ES2022",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
 
-    /* Qualidade e Segurança do Código */
     "strict": true,
     "noUncheckedIndexedAccess": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "types": ["node"]
   },
-  "include": ["src/**/*"]
+  "include": ["src", "prisma.config.ts"]
 }

@@ -5,9 +5,19 @@ const PORT = Number(process.env.PORT) || 3333;
 
 const start = async () => {
   try {
-    await app.listen({ port: PORT, host: '0.0.0.0' });
+    console.log('INICIANDO...');
+    console.log('PORT:', PORT);
+    console.log('JWT:', !!process.env.JWT_SECRET);
+    console.log('DATABASE:', !!process.env.DATABASE_URL);
+
+    await app.listen({
+      port: PORT,
+      host: '0.0.0.0',
+    });
+
+    console.log('SERVIDOR ONLINE');
   } catch (err) {
-    app.log.error(err);
+    console.error(err);
     process.exit(1);
   }
 };

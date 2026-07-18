@@ -15,7 +15,6 @@ export async function reservationRoutes(app: FastifyInstance) {
       onRequest: [app.authenticate],
       schema: {
         body: z.object({
-          userId: z.string().uuid(),
           roomId: z.string().uuid(),
           numberOfParticipants: z.number().int().min(1),
           startAt: z.string().datetime(),
@@ -24,6 +23,15 @@ export async function reservationRoutes(app: FastifyInstance) {
       },
     },
     reservationController.create,
+  );
+
+  // Listar reservas - usuário autenticado
+  appWithZod.get(
+    '/',
+    {
+      onRequest: [app.authenticate],
+    },
+    reservationController.list,
   );
 
   // Buscar reserva por ID - usuário autenticado
@@ -40,6 +48,27 @@ export async function reservationRoutes(app: FastifyInstance) {
     reservationController.show,
   );
 
+  // Atualizar reserva - usuário autenticado
+  appWithZod.put(
+    '/:id',
+    {
+      onRequest: [app.authenticate],
+      schema: {
+        params: z.object({
+          id: z.string().uuid(),
+        }),
+
+        body: z.object({
+          roomId: z.string().uuid().optional(),
+          numberOfParticipants: z.number().int().min(1).optional(),
+          startAt: z.string().datetime().optional(),
+          endAt: z.string().datetime().optional(),
+        }),
+      },
+    },
+    reservationController.update,
+  );
+
   // Deletar reserva - usuário autenticado
   appWithZod.delete(
     '/:id',
@@ -52,14 +81,5 @@ export async function reservationRoutes(app: FastifyInstance) {
       },
     },
     reservationController.delete,
-  );
-
-  // Listar reservas - usuário autenticado
-  appWithZod.get(
-    '/',
-    {
-      onRequest: [app.authenticate],
-    },
-    reservationController.list,
   );
 }

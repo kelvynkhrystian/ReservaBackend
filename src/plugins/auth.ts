@@ -1,6 +1,7 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import fp from 'fastify-plugin';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
-export async function authPlugin(app: FastifyInstance) {
+export const authPlugin = fp(async (app) => {
   app.decorate(
     'authenticate',
     async function (request: FastifyRequest, reply: FastifyReply) {
@@ -24,4 +25,4 @@ export async function authPlugin(app: FastifyInstance) {
       }
     },
   );
-}
+});

@@ -1,12 +1,14 @@
 import { prisma } from '../lib/prisma.js';
 
 export class ReservationService {
+  // Descobrir qual é o tempo mínimo entre reservas.
   private async getReservationInterval() {
     const config = await prisma.systemConfig.findFirst();
 
     return config?.reservationInterval ?? 0;
   }
 
+  // Verificar se a sala comporta a quantidade de pessoas.
   private async validateCapacity(roomId: string, participants: number) {
     const room = await prisma.room.findUnique({
       where: {
@@ -25,6 +27,7 @@ export class ReservationService {
     }
   }
 
+  // Verificar se já existe uma reserva naquele período.
   private async checkConflict(
     roomId: string,
     start: Date,
@@ -177,8 +180,18 @@ export class ReservationService {
     const reservation = await prisma.reservation.findUnique({
       where: { id },
       include: {
-        user: { select: { name: true } },
-        room: { select: { name: true } },
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        room: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 

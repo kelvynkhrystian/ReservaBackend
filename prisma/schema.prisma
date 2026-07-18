@@ -47,3 +47,18 @@ model Reservation {
 
   @@map("reservations")
 }
+
+model SystemConfig {
+  id                    String   @id @default(uuid())
+
+  systemName            String   @map("system_name")
+  slogan                String?
+  logo                  String?
+
+  reservationInterval   Int      @default(0) @map("reservation_interval")
+
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@map("system_config")
+}

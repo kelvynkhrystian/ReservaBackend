@@ -14,10 +14,11 @@ const prisma = new PrismaClient({
 async function main() {
   console.log('Iniciando seed...');
 
-  // Limpeza na ordem correta devido às chaves estrangeiras
+  // Limpeza das tabelas
   await prisma.reservation.deleteMany();
   await prisma.room.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.systemConfig.deleteMany();
 
   // 1. Criar Usuários
 
@@ -42,7 +43,19 @@ async function main() {
     },
   });
 
-  // 2. Criar 10 Salas
+  // 2. Criar configuração do sistema
+
+  await prisma.systemConfig.create({
+    data: {
+      systemName: 'Reserva Fácil',
+      slogan: 'Reserve sua sala de forma simples e rápida',
+      logo: '',
+      reservationInterval: 10,
+    },
+  });
+
+  // 3. Criar 10 Salas
+
   const rooms = [];
 
   for (let i = 1; i <= 10; i++) {
@@ -59,21 +72,28 @@ async function main() {
 
   const createdRooms = await prisma.room.findMany();
 
-  // 3. Criar 20 Reservas
+  // 4. Criar 20 Reservas
+
   const reservations = [];
 
   for (let i = 0; i < 20; i++) {
     const startDate = new Date();
+
     startDate.setDate(startDate.getDate() + i);
 
     const endDate = new Date(startDate);
+
     endDate.setHours(startDate.getHours() + 2);
 
     reservations.push({
       userId: i % 2 === 0 ? admin.id : user.id,
+
       roomId: createdRooms[i % createdRooms.length].id,
+
       numberOfParticipants: 2,
+
       startAt: startDate,
+
       endAt: endDate,
     });
   }
@@ -82,7 +102,9 @@ async function main() {
     data: reservations,
   });
 
-  console.log('Seed completo: 2 usuários, 10 salas e 20 reservas criadas!');
+  console.log(
+    'Seed completo: usuários, configuração, salas e reservas criadas!',
+  );
 }
 
 main()

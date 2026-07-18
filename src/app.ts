@@ -11,6 +11,7 @@ import { userRoutes } from './routes/user-routes.js';
 import { roomRoutes } from './routes/room-routes.js';
 import { reservationRoutes } from './routes/reservation-routes.js';
 import { authRoutes } from './routes/auth-routes.js';
+import { configRoutes } from './routes/config-routes.js';
 
 import rateLimit from '@fastify/rate-limit';
 
@@ -51,5 +52,8 @@ app.register(userRoutes, { prefix: '/users' });
 app.register(roomRoutes, { prefix: '/rooms' });
 app.register(reservationRoutes, { prefix: '/reservations' });
 app.register(authRoutes, { prefix: '/auth' });
+app.register(configRoutes, {
+  prefix: '/config',
+});
 
 export { app };

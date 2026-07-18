@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { app } from './app.js';
 
-const PORT = 3333;
+const PORT = Number(process.env.PORT) || 3333;
 
 const start = async () => {
   try {

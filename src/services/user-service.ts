@@ -30,7 +30,7 @@ export class UserService {
         name: true,
         email: true,
         role: true,
-        created_at: true,
+        createdAt: true,
       },
     });
   }

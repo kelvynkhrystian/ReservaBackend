@@ -1,4 +1,5 @@
-import { app } from './app.js'; // Usamos .js no final por causa do ES Modules moderno
+import 'dotenv/config';
+import { app } from './app.js';
 
 const PORT = 3333;
 

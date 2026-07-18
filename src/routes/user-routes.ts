@@ -8,49 +8,74 @@ const userController = new UserController();
 export async function userRoutes(app: FastifyInstance) {
   const appWithZod = app.withTypeProvider<ZodTypeProvider>();
 
+  // Criar usuário - somente ADMIN
   appWithZod.post(
     '/',
     {
+      onRequest: [app.authenticate, app.verifyAdmin],
       schema: {
         body: z.object({
           name: z.string().min(3),
           email: z.string().email(),
-          password: z.string().min(6),
+          password: z.string().min(4),
         }),
       },
     },
     userController.create,
   );
 
-  appWithZod.get('/', userController.list);
+  // Listar usuários - usuário autenticado
+  appWithZod.get(
+    '/',
+    {
+      onRequest: [app.authenticate],
+    },
+    userController.list,
+  );
 
+  // Buscar usuário - usuário autenticado
   appWithZod.get(
     '/:id',
     {
-      schema: { params: z.object({ id: z.string().uuid() }) },
+      onRequest: [app.authenticate],
+      schema: {
+        params: z.object({
+          id: z.string().uuid(),
+        }),
+      },
     },
     userController.show,
   );
 
+  // Atualizar usuário - usuário autenticado
   appWithZod.put(
     '/:id',
     {
+      onRequest: [app.authenticate],
       schema: {
-        params: z.object({ id: z.string().uuid() }),
+        params: z.object({
+          id: z.string().uuid(),
+        }),
         body: z.object({
           name: z.string().min(3).optional(),
           email: z.string().email().optional(),
-          password: z.string().min(6).optional(),
+          password: z.string().min(4).optional(),
         }),
       },
     },
     userController.update,
   );
 
+  // Deletar usuário - somente ADMIN
   appWithZod.delete(
     '/:id',
     {
-      schema: { params: z.object({ id: z.string().uuid() }) },
+      onRequest: [app.authenticate, app.verifyAdmin],
+      schema: {
+        params: z.object({
+          id: z.string().uuid(),
+        }),
+      },
     },
     userController.delete,
   );

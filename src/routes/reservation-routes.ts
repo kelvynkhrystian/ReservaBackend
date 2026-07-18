@@ -1,18 +1,18 @@
 import { FastifyInstance } from 'fastify';
-import { z } from 'zod'; // 1. Importa o Zod
-import { ZodTypeProvider } from 'fastify-type-provider-zod'; // 2. Importa o provider
+import { z } from 'zod';
+import { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { ReservationController } from '../controllers/reservation-controller.js';
 
 const reservationController = new ReservationController();
 
 export async function reservationRoutes(app: FastifyInstance) {
-  // 3. Define o provider para ter autocompletar e validação
   const appWithZod = app.withTypeProvider<ZodTypeProvider>();
 
-  // Exemplo de POST com validação de Body
+  // Criar reserva - usuário autenticado
   appWithZod.post(
     '/',
     {
+      onRequest: [app.authenticate],
       schema: {
         body: z.object({
           userId: z.string().uuid(),
@@ -26,10 +26,11 @@ export async function reservationRoutes(app: FastifyInstance) {
     reservationController.create,
   );
 
-  // Exemplo de GET/DELETE com validação de Params
+  // Buscar reserva por ID - usuário autenticado
   appWithZod.get(
     '/:id',
     {
+      onRequest: [app.authenticate],
       schema: {
         params: z.object({
           id: z.string().uuid(),
@@ -39,9 +40,11 @@ export async function reservationRoutes(app: FastifyInstance) {
     reservationController.show,
   );
 
+  // Deletar reserva - usuário autenticado
   appWithZod.delete(
     '/:id',
     {
+      onRequest: [app.authenticate],
       schema: {
         params: z.object({
           id: z.string().uuid(),
@@ -51,5 +54,12 @@ export async function reservationRoutes(app: FastifyInstance) {
     reservationController.delete,
   );
 
-  appWithZod.get('/', reservationController.list);
+  // Listar reservas - usuário autenticado
+  appWithZod.get(
+    '/',
+    {
+      onRequest: [app.authenticate],
+    },
+    reservationController.list,
+  );
 }

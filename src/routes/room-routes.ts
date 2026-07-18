@@ -8,9 +8,11 @@ const roomController = new RoomController();
 export async function roomRoutes(app: FastifyInstance) {
   const appWithZod = app.withTypeProvider<ZodTypeProvider>();
 
+  // Criar sala - somente ADMIN
   appWithZod.post(
     '/',
     {
+      onRequest: [app.authenticate, app.verifyAdmin],
       schema: {
         body: z.object({
           name: z.string().min(1),
@@ -22,21 +24,38 @@ export async function roomRoutes(app: FastifyInstance) {
     roomController.create,
   );
 
-  appWithZod.get('/', roomController.list);
+  // Listar salas - usuário autenticado
+  appWithZod.get(
+    '/',
+    {
+      onRequest: [app.authenticate],
+    },
+    roomController.list,
+  );
 
+  // Buscar sala - usuário autenticado
   appWithZod.get(
     '/:id',
     {
-      schema: { params: z.object({ id: z.string().uuid() }) },
+      onRequest: [app.authenticate],
+      schema: {
+        params: z.object({
+          id: z.string().uuid(),
+        }),
+      },
     },
     roomController.show,
   );
 
+  // Atualizar sala - somente ADMIN
   appWithZod.put(
     '/:id',
     {
+      onRequest: [app.authenticate, app.verifyAdmin],
       schema: {
-        params: z.object({ id: z.string().uuid() }),
+        params: z.object({
+          id: z.string().uuid(),
+        }),
         body: z.object({
           name: z.string().min(1).optional(),
           capacity: z.number().int().min(1).optional(),
@@ -47,10 +66,16 @@ export async function roomRoutes(app: FastifyInstance) {
     roomController.update,
   );
 
+  // Deletar sala - somente ADMIN
   appWithZod.delete(
     '/:id',
     {
-      schema: { params: z.object({ id: z.string().uuid() }) },
+      onRequest: [app.authenticate, app.verifyAdmin],
+      schema: {
+        params: z.object({
+          id: z.string().uuid(),
+        }),
+      },
     },
     roomController.delete,
   );

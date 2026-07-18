@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import { userRoutes } from './routes/user-routes.js';
 import { roomRoutes } from './routes/room-routes.js';
+import { reservationRoutes } from './routes/reservation-routes.js';
 
 const app = fastify({
   logger: true, // Usa o sistema de logs nativo e excelente do Fastify!
@@ -23,5 +24,6 @@ app.get('/healthcheck', async () => {
 // Rotas
 app.register(userRoutes, { prefix: '/users' });
 app.register(roomRoutes, { prefix: '/rooms' });
+app.register(reservationRoutes, { prefix: '/reservations' });
 
 export { app };

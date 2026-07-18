@@ -1,6 +1,7 @@
 import fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
+import { userRoutes } from './routes/user-routes.js';
 
 const app = fastify({
   logger: true, // Usa o sistema de logs nativo e excelente do Fastify!
@@ -17,5 +18,8 @@ app.register(helmet);
 app.get('/healthcheck', async () => {
   return { status: 'ok', timestamp: new Date().toISOString() };
 });
+
+// Rotas
+app.register(userRoutes, { prefix: '/users' });
 
 export { app };

@@ -1,0 +1,32 @@
+{
+  "name": "reservabackend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kelvynkhrystian/ReservaBackend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/kelvynkhrystian/ReservaBackend/issues"
+  },
+  "homepage": "https://github.com/kelvynkhrystian/ReservaBackend#readme",
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "prisma": "^7.8.0",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.8.0",
+    "fastify": "^5.10.0",
+    "zod": "^4.4.3"
+  }
+}

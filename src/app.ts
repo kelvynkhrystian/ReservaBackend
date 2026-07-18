@@ -43,7 +43,7 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
 // Rota de teste para ver se o servidor está respondendo
-app.get('/api', async () => {
+app.get('/', async () => {
   return { status: 'ok', timestamp: new Date().toISOString() };
 });
 

@@ -25,18 +25,26 @@ export const authenticate = (
 
   try {
     const secret = process.env.JWT_SECRET!;
-    const decoded = jwt.verify(token, secret) as {
-      id: string;
-      role: string;
-    };
+
+    const decoded = jwt.verify(token, secret);
+
+    console.log('TOKEN DECODIFICADO:');
+    console.log(decoded);
 
     req.user = {
-      id: decoded.id,
+      id: (decoded as any).id,
     };
+
+    console.log('REQ.USER:');
+    console.log(req.user);
 
     next();
   } catch (err) {
-    return res.status(401).json({ message: 'Token inválido' });
+    console.log(err);
+
+    return res.status(401).json({
+      message: 'Token inválido',
+    });
   }
 };
 

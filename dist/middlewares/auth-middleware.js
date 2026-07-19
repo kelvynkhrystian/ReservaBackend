@@ -16,11 +16,20 @@ export const authenticate = (req, res, next) => {
     try {
         const secret = process.env.JWT_SECRET;
         const decoded = jwt.verify(token, secret);
-        req.user = { id: decoded.sub };
+        console.log('TOKEN DECODIFICADO:');
+        console.log(decoded);
+        req.user = {
+            id: decoded.id,
+        };
+        console.log('REQ.USER:');
+        console.log(req.user);
         next();
     }
     catch (err) {
-        return res.status(401).json({ message: 'Token inválido' });
+        console.log(err);
+        return res.status(401).json({
+            message: 'Token inválido',
+        });
     }
 };
 export const verifyAdmin = async (req, res, next) => {
@@ -33,7 +42,7 @@ export const verifyAdmin = async (req, res, next) => {
             where: { id: userId },
             select: { role: true },
         });
-        if (user?.role !== 'ADMIN') {
+        if (user?.role !== 'admin') {
             return res.status(403).json({
                 message: 'Acesso negado: Requer privilégios de administrador',
             });

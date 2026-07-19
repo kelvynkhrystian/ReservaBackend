@@ -65,7 +65,7 @@ export const verifyAdmin = async (
       select: { role: true },
     });
 
-    if (user?.role !== 'ADMIN') {
+    if (user?.role !== 'admin') {
       return res.status(403).json({
         message: 'Acesso negado: Requer privilégios de administrador',
       });

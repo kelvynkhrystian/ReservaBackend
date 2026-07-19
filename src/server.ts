@@ -1,19 +1,26 @@
-import fastify from 'fastify';
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import 'dotenv/config';
 
-console.log('COMEÇOU');
+const app = express();
+const port = Number(process.env.PORT) || 3333;
 
-const app = fastify();
+// Middlewares básicos
+app.use(cors());
+app.use(express.json());
 
-app.get('/', async () => {
-  return { ok: true };
+// Rota de teste
+app.get('/health', (req: Request, res: Response) => {
+  res.json({
+    status: 'ok',
+    message: 'Servidor rodando com Express e TypeScript!',
+  });
 });
 
-await app.listen({
-  host: '0.0.0.0',
-  port: Number(process.env.PORT) || 3333,
+// Inicialização (host 0.0.0.0 é obrigatório para a Hostinger)
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Servidor Express rodando na porta ${port}`);
 });
-
-console.log('ONLINE');
 
 // import 'dotenv/config';
 // import { app } from './app.js';

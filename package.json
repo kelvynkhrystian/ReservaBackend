@@ -25,6 +25,8 @@
   "homepage": "https://github.com/kelvynkhrystian/ReservaBackend#readme",
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/node": "^26.1.1",
     "@typescript-eslint/eslint-plugin": "^7.10.0",
     "@typescript-eslint/parser": "^7.10.0",
@@ -44,6 +46,8 @@
     "@prisma/adapter-pg": "^6.19.3",
     "@prisma/client": "^6.19.3",
     "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "fastify": "^5.10.0",
     "fastify-type-provider-zod": "^7.0.0",
     "pg": "^8.22.0",

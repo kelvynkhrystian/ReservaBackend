@@ -66,11 +66,11 @@ export class ReservationService {
     userId: string;
     roomId: string;
     numberOfParticipants: number;
-    startAt: string;
-    endAt: string;
+    startAt: Date;
+    endAt: Date;
   }) {
-    const start = new Date(data.startAt);
-    const end = new Date(data.endAt);
+    const start = data.startAt;
+    const end = data.endAt;
 
     if (start >= end) {
       throw new Error('A data de término deve ser maior que a data de início.');

@@ -6,7 +6,7 @@ const reservationService = new ReservationService();
 export class ReservationController {
   async create(req: Request, res: Response) {
     try {
-      const { roomId, numberOfParticipants, startAt, endAt } = req.body as any;
+      const { roomId, numberOfParticipants, startAt, endAt } = req.body;
 
       const reservation = await reservationService.create({
         userId: req.user.id, // Acessa o ID do usuário autenticado

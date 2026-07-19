@@ -66,25 +66,11 @@ export class ReservationService {
     userId: string;
     roomId: string;
     numberOfParticipants: number;
-    startAt: Date | string;
-    endAt: Date | string;
+    startAt: Date;
+    endAt: Date;
   }) {
-    const start =
-      data.startAt instanceof Date ? data.startAt : new Date(data.startAt);
-
-    const end = data.endAt instanceof Date ? data.endAt : new Date(data.endAt);
-
-    console.log('===== BACKEND =====');
-    console.log({
-      start,
-      end,
-      startISO: start.toISOString(),
-      endISO: end.toISOString(),
-    });
-
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      throw new Error('Datas inválidas.');
-    }
+    const start = data.startAt;
+    const end = data.endAt;
 
     if (start >= end) {
       throw new Error('A data de término deve ser maior que a data de início.');
@@ -95,16 +81,21 @@ export class ReservationService {
     const interval = await this.getReservationInterval();
 
     const endWithInterval = new Date(end);
+
     endWithInterval.setMinutes(endWithInterval.getMinutes() + interval);
 
     await this.checkConflict(data.roomId, start, endWithInterval);
 
-    return prisma.reservation.create({
+    return await prisma.reservation.create({
       data: {
         userId: data.userId,
+
         roomId: data.roomId,
+
         numberOfParticipants: data.numberOfParticipants,
+
         startAt: start,
+
         endAt: end,
       },
     });

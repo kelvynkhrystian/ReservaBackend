@@ -1,43 +1,48 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import { AuthService } from '../services/auth-service.js';
 
 const authService = new AuthService();
 
 export class AuthController {
-  async login(request: FastifyRequest, reply: FastifyReply) {
+  async login(req: Request, res: Response) {
     try {
-      const { email, password } = request.body as {
+      // O Zod já validou o body no middleware, então o req.body está seguro
+      const { email, password } = req.body as {
         email: string;
         password: string;
       };
 
       const user = await authService.login(email, password);
 
-      const token = await reply.jwtSign({
-        id: user.id,
-        role: user.role,
-      });
+      // Usando jsonwebtoken para assinar o token
+      const secret = process.env.JWT_SECRET!;
+      const token = jwt.sign(
+        { id: user.id, role: user.role },
+        secret,
+        { expiresIn: '1d' }, // Defina o tempo de expiração conforme sua necessidade
+      );
 
-      return reply.send({
+      return res.status(200).json({
         user,
         token,
       });
     } catch (error: any) {
-      return reply.status(401).send({
+      return res.status(401).json({
         error: error.message,
       });
     }
   }
 
-  async logout(request: FastifyRequest, reply: FastifyReply) {
+  async logout(req: Request, res: Response) {
     try {
       await authService.logout();
 
-      return reply.send({
+      return res.status(200).json({
         message: 'Logout realizado com sucesso.',
       });
     } catch (error: any) {
-      return reply.status(400).send({
+      return res.status(400).json({
         error: error.message,
       });
     }

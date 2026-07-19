@@ -1,12 +1,7 @@
-import fastify from 'fastify';
-import { authPlugin } from './plugins/auth.js';
-import cors from '@fastify/cors';
-import helmet from '@fastify/helmet';
-import jwt from '@fastify/jwt';
-import {
-  serializerCompiler,
-  validatorCompiler,
-} from 'fastify-type-provider-zod';
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 import { userRoutes } from './routes/user-routes.js';
 import { roomRoutes } from './routes/room-routes.js';
@@ -14,61 +9,32 @@ import { reservationRoutes } from './routes/reservation-routes.js';
 import { authRoutes } from './routes/auth-routes.js';
 import { configRoutes } from './routes/config-routes.js';
 
-import rateLimit from '@fastify/rate-limit';
+const app = express();
 
-const app = fastify({
-  logger: true,
-}).withTypeProvider();
+// Middlewares
+app.use(cors({ origin: '*' }));
+app.use(helmet());
+app.use(express.json());
 
-async function setupApp() {
-  await app.register(cors, {
-    origin: '*',
+// Rate Limit
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  max: 100,
+});
+app.use(limiter);
+
+// Rotas
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
   });
+});
 
-  await app.register(jwt, {
-    secret: process.env.JWT_SECRET!,
-  });
-
-  await app.register(authPlugin);
-
-  await app.register(rateLimit, {
-    max: 100,
-    timeWindow: '1 minute',
-  });
-
-  await app.register(helmet);
-
-  app.setValidatorCompiler(validatorCompiler);
-  app.setSerializerCompiler(serializerCompiler);
-
-  app.get('/', async () => {
-    return {
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-    };
-  });
-
-  app.register(userRoutes, {
-    prefix: '/users',
-  });
-
-  app.register(roomRoutes, {
-    prefix: '/rooms',
-  });
-
-  app.register(reservationRoutes, {
-    prefix: '/reservations',
-  });
-
-  app.register(authRoutes, {
-    prefix: '/auth',
-  });
-
-  app.register(configRoutes, {
-    prefix: '/config',
-  });
-}
-
-await setupApp();
+app.use('/users', userRoutes);
+app.use('/rooms', roomRoutes);
+app.use('/reservations', reservationRoutes);
+app.use('/auth', authRoutes);
+app.use('/config', configRoutes);
 
 export { app };

@@ -1,56 +1,57 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { Request, Response } from 'express';
 import { UserService } from '../services/user-service.js';
 
 const userService = new UserService();
 
 export class UserController {
-  async create(request: FastifyRequest, reply: FastifyReply) {
+  async create(req: Request, res: Response) {
     try {
-      const body = request.body as any;
+      const body = req.body;
       const user = await userService.create(body);
-      return reply.status(201).send(user);
+      return res.status(201).json(user);
     } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+      return res.status(400).json({ error: error.message });
     }
   }
 
-  async list(request: FastifyRequest, reply: FastifyReply) {
+  async list(req: Request, res: Response) {
     try {
       const users = await userService.list();
-      return reply.send(users);
+      return res.status(200).json(users);
     } catch (error: any) {
-      return reply.status(500).send({ error: error.message });
+      return res.status(500).json({ error: error.message });
     }
   }
 
-  async show(request: FastifyRequest, reply: FastifyReply) {
+  async show(req: Request, res: Response) {
     try {
-      const { id } = request.params as any;
+      const { id } = req.params as { id: string };
       const user = await userService.findById(id);
-      return reply.send(user);
+      return res.status(200).json(user);
     } catch (error: any) {
-      return reply.status(444).send({ error: error.message }); // 404 Not Found
+      // Corrigido de 444 para 404 (Not Found)
+      return res.status(404).json({ error: error.message });
     }
   }
 
-  async update(request: FastifyRequest, reply: FastifyReply) {
+  async update(req: Request, res: Response) {
     try {
-      const { id } = request.params as any;
-      const body = request.body as any;
+      const { id } = req.params as { id: string };
+      const body = req.body;
       const updatedUser = await userService.update(id, body);
-      return reply.send(updatedUser);
+      return res.status(200).json(updatedUser);
     } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+      return res.status(400).json({ error: error.message });
     }
   }
 
-  async delete(request: FastifyRequest, reply: FastifyReply) {
+  async delete(req: Request, res: Response) {
     try {
-      const { id } = request.params as any;
+      const { id } = req.params as { id: string };
       await userService.delete(id);
-      return reply.status(204).send();
+      return res.status(204).send();
     } catch (error: any) {
-      return reply.status(400).send({ error: error.message });
+      return res.status(400).json({ error: error.message });
     }
   }
 }

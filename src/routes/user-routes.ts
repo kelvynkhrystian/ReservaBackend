@@ -1,82 +1,60 @@
-import { FastifyInstance } from 'fastify';
+import { Router } from 'express';
 import { z } from 'zod';
-import { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { UserController } from '../controllers/user-controller.js';
+import { authenticate, verifyAdmin } from '../middlewares/auth-middleware.js';
+import { validate } from '../middlewares/validate-middleware.js';
 
+const userRoutes = Router();
 const userController = new UserController();
 
-export async function userRoutes(app: FastifyInstance) {
-  const appWithZod = app.withTypeProvider<ZodTypeProvider>();
+// Criar usuário - somente ADMIN
+userRoutes.post(
+  '/',
+  authenticate,
+  verifyAdmin,
+  validate(
+    z.object({
+      name: z.string().min(3),
+      email: z.string().email(),
+      password: z.string().min(4),
+    }),
+  ),
+  userController.create,
+);
 
-  // Criar usuário - somente ADMIN
-  appWithZod.post(
-    '/',
-    {
-      onRequest: [app.authenticate, app.verifyAdmin],
-      schema: {
-        body: z.object({
-          name: z.string().min(3),
-          email: z.string().email(),
-          password: z.string().min(4),
-        }),
-      },
-    },
-    userController.create,
-  );
+// Listar usuários - usuário autenticado
+userRoutes.get('/', authenticate, userController.list);
 
-  // Listar usuários - usuário autenticado
-  appWithZod.get(
-    '/',
-    {
-      onRequest: [app.authenticate],
-    },
-    userController.list,
-  );
+// Buscar usuário - usuário autenticado
+userRoutes.get(
+  '/:id',
+  authenticate,
+  validate(z.object({ id: z.string().uuid() }), 'params'),
+  userController.show,
+);
 
-  // Buscar usuário - usuário autenticado
-  appWithZod.get(
-    '/:id',
-    {
-      onRequest: [app.authenticate],
-      schema: {
-        params: z.object({
-          id: z.string().uuid(),
-        }),
-      },
-    },
-    userController.show,
-  );
+// Atualizar usuário - usuário autenticado
+userRoutes.put(
+  '/:id',
+  authenticate,
+  validate(z.object({ id: z.string().uuid() }), 'params'),
+  validate(
+    z.object({
+      name: z.string().min(3).optional(),
+      email: z.string().email().optional(),
+      password: z.string().min(4).optional(),
+    }),
+  ),
+  userController.update,
+);
 
-  // Atualizar usuário - usuário autenticado
-  appWithZod.put(
-    '/:id',
-    {
-      onRequest: [app.authenticate],
-      schema: {
-        params: z.object({
-          id: z.string().uuid(),
-        }),
-        body: z.object({
-          name: z.string().min(3).optional(),
-          email: z.string().email().optional(),
-          password: z.string().min(4).optional(),
-        }),
-      },
-    },
-    userController.update,
-  );
+// Deletar usuário - somente ADMIN
+userRoutes.delete(
+  '/:id',
+  authenticate,
+  verifyAdmin,
+  validate(z.object({ id: z.string().uuid() }), 'params'),
+  userController.delete,
+);
 
-  // Deletar usuário - somente ADMIN
-  appWithZod.delete(
-    '/:id',
-    {
-      onRequest: [app.authenticate, app.verifyAdmin],
-      schema: {
-        params: z.object({
-          id: z.string().uuid(),
-        }),
-      },
-    },
-    userController.delete,
-  );
-}
+export { userRoutes };

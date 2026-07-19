@@ -1,27 +1,19 @@
-// src/server.ts
-import Fastify from 'fastify';
+import fastify from 'fastify';
 
-const app = Fastify({
-  logger: true,
-});
+console.log('COMEÇOU');
+
+const app = fastify();
 
 app.get('/', async () => {
   return { ok: true };
 });
 
-const port = Number(process.env.PORT) || 3000;
+await app.listen({
+  host: '0.0.0.0',
+  port: Number(process.env.PORT) || 3333,
+});
 
-try {
-  await app.listen({
-    host: '0.0.0.0',
-    port,
-  });
-
-  console.log(`Servidor iniciado na porta ${port}`);
-} catch (err) {
-  console.error(err);
-  process.exit(1);
-}
+console.log('ONLINE');
 
 // import 'dotenv/config';
 // import { app } from './app.js';

@@ -25,9 +25,14 @@ export const authenticate = (
 
   try {
     const secret = process.env.JWT_SECRET!;
-    const decoded = jwt.verify(token, secret) as { sub: string };
+    const decoded = jwt.verify(token, secret) as {
+      id: string;
+      role: string;
+    };
 
-    req.user = { id: decoded.sub };
+    req.user = {
+      id: decoded.id,
+    };
 
     next();
   } catch (err) {

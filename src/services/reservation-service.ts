@@ -72,6 +72,14 @@ export class ReservationService {
     const start = data.startAt;
     const end = data.endAt;
 
+    console.log('===== BACKEND =====');
+    console.log(data);
+    console.log('startAt recebido:', data.startAt);
+    console.log('endAt recebido:', data.endAt);
+
+    console.log('Date:', start);
+    console.log('ISO:', start.toISOString());
+
     if (start >= end) {
       throw new Error('A data de término deve ser maior que a data de início.');
     }

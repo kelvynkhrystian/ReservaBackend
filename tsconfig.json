@@ -1,19 +1,11 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "./src",
     "outDir": "./dist",
-
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ES2022",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "skipLibCheck": true,
-
-    "types": ["node"]
+    "esModuleInterop": true
   },
-  "include": ["src", "prisma.config.ts"]
+  "include": ["src/**/*"]
 }

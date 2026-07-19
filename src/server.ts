@@ -1,32 +1,27 @@
-import 'dotenv/config';
-import http from 'node:http';
+// src/server.ts
+import Fastify from 'fastify';
 
-const PORT = Number(process.env.PORT) || 3333;
+const app = Fastify({
+  logger: true,
+});
 
-console.log('INICIANDO...');
-console.log('PORT:', PORT);
-console.log('JWT:', !!process.env.JWT_SECRET);
-console.log('DATABASE:', !!process.env.DATABASE_URL);
+app.get('/', async () => {
+  return { ok: true };
+});
 
-const server = http.createServer((req, res) => {
-  console.log(`${req.method} ${req.url}`);
+const port = Number(process.env.PORT) || 3000;
 
-  res.writeHead(200, {
-    'Content-Type': 'application/json',
+try {
+  await app.listen({
+    host: '0.0.0.0',
+    port,
   });
 
-  res.end(
-    JSON.stringify({
-      status: 'ok',
-      message: 'Servidor funcionando!',
-      timestamp: new Date().toISOString(),
-    }),
-  );
-});
-
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`SERVIDOR ONLINE na porta ${PORT}`);
-});
+  console.log(`Servidor iniciado na porta ${port}`);
+} catch (err) {
+  console.error(err);
+  process.exit(1);
+}
 
 // import 'dotenv/config';
 // import { app } from './app.js';

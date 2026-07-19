@@ -1,4 +1,5 @@
 import { prisma } from '../lib/prisma.js';
+import bcrypt from 'bcrypt';
 export class UserService {
     // Criar Usuário no Banco
     async create(data) {
@@ -60,6 +61,65 @@ export class UserService {
         await this.findById(id);
         return await prisma.user.delete({
             where: { id },
+        });
+    }
+    async updateMyEmail(userId, data) {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+        if (!user) {
+            throw new Error('Usuário não encontrado.');
+        }
+        const passwordMatch = await bcrypt.compare(data.password, user.password);
+        if (!passwordMatch) {
+            throw new Error('Senha incorreta.');
+        }
+        const emailExists = await prisma.user.findUnique({
+            where: {
+                email: data.newEmail,
+            },
+        });
+        if (emailExists && emailExists.id !== user.id) {
+            throw new Error('Este email já está em uso.');
+        }
+        return await prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                email: data.newEmail,
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+            },
+        });
+    }
+    async updateMyPassword(userId, data) {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+        if (!user) {
+            throw new Error('Usuário não encontrado.');
+        }
+        const passwordMatch = await bcrypt.compare(data.currentPassword, user.password);
+        if (!passwordMatch) {
+            throw new Error('Senha atual incorreta.');
+        }
+        const hash = await bcrypt.hash(data.newPassword, 10);
+        await prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                password: hash,
+            },
         });
     }
 }

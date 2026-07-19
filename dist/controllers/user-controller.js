@@ -52,4 +52,38 @@ export class UserController {
             return res.status(400).json({ error: error.message });
         }
     }
+    async updateMyEmail(req, res) {
+        try {
+            const userId = req.user.id;
+            const { newEmail, password } = req.body;
+            const user = await userService.updateMyEmail(userId, {
+                newEmail,
+                password,
+            });
+            return res.status(200).json(user);
+        }
+        catch (error) {
+            return res.status(400).json({
+                error: error.message,
+            });
+        }
+    }
+    async updateMyPassword(req, res) {
+        try {
+            const userId = req.user.id;
+            const { currentPassword, newPassword } = req.body;
+            await userService.updateMyPassword(userId, {
+                currentPassword,
+                newPassword,
+            });
+            return res.status(200).json({
+                message: 'Senha atualizada com sucesso.',
+            });
+        }
+        catch (error) {
+            return res.status(400).json({
+                error: error.message,
+            });
+        }
+    }
 }

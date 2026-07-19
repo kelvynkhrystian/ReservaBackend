@@ -58,3 +58,27 @@ userRoutes.delete(
 );
 
 export { userRoutes };
+
+userRoutes.put(
+  '/me/email',
+  authenticate,
+  validate(
+    z.object({
+      newEmail: z.string().email(),
+      password: z.string().min(4),
+    }),
+  ),
+  userController.updateMyEmail,
+);
+
+userRoutes.put(
+  '/me/password',
+  authenticate,
+  validate(
+    z.object({
+      currentPassword: z.string().min(4),
+      newPassword: z.string().min(4),
+    }),
+  ),
+  userController.updateMyPassword,
+);

@@ -15,8 +15,8 @@ reservationRoutes.post(
     z.object({
       roomId: z.string().uuid(),
       numberOfParticipants: z.number().int().min(1),
-      startAt: z.string().datetime(),
-      endAt: z.string().datetime(),
+      startAt: z.coerce.date(),
+      endAt: z.coerce.date(),
     }),
   ),
   reservationController.create,
@@ -42,8 +42,8 @@ reservationRoutes.put(
     z.object({
       roomId: z.string().uuid().optional(),
       numberOfParticipants: z.number().int().min(1).optional(),
-      startAt: z.string().datetime().optional(),
-      endAt: z.string().datetime().optional(),
+      startAt: z.coerce.date().optional(),
+      endAt: z.coerce.date().optional(),
     }),
   ),
   reservationController.update,
